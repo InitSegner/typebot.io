@@ -163,16 +163,13 @@ export const getAuthOptions = ({
       if (restricted === 'rate-limited') throw new Error('rate-limited')
       if (!account) return false
       const isNewUser = !('createdAt' in user && isDefined(user.createdAt))
-      /**
+
 	  if (isNewUser && user.email) {
-        const { body } = await got.get(
-          'https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf'
-        )
-        const disposableEmailDomains = body.split('\n')
-        if (disposableEmailDomains.includes(user.email.split('@')[1]))
+        const body = env.MAILWHITELIST
+        const whiteListDomains = body.split(',')
+        if (!(whiteListDomains.includes(user.email.split('@')[1])))
           return false
-      }
-	  */
+
       if (env.DISABLE_SIGNUP && isNewUser && user.email) {
         const { invitations, workspaceInvitations } =
           await getNewUserInvitations(prisma, user.email)
