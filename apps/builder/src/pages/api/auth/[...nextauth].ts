@@ -167,7 +167,7 @@ export const getAuthOptions = ({
 	  if (isNewUser && user.email) {
         const { body } = await got.get(
           'https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf'
-        )la
+        )
         const disposableEmailDomains = body.split('\n')
         if (disposableEmailDomains.includes(user.email.split('@')[1]))
           return false
