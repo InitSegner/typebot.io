@@ -16,7 +16,7 @@ import { getNewUserInvitations } from '@/features/auth/helpers/getNewUserInvitat
 import { sendVerificationRequest } from '@/features/auth/helpers/sendVerificationRequest'
 import { Ratelimit } from '@upstash/ratelimit'
 import { Redis } from '@upstash/redis/nodejs'
-import got from 'got'
+//import ky from 'ky'
 import { env } from '@typebot.io/env'
 import * as Sentry from '@sentry/nextjs'
 import { getIp } from '@typebot.io/lib/getIp'
@@ -163,13 +163,28 @@ export const getAuthOptions = ({
       if (restricted === 'rate-limited') throw new Error('rate-limited')
       if (!account) return false
       const isNewUser = !('createdAt' in user && isDefined(user.createdAt))
+      /**
       if (isNewUser && user.email) {
-        const body = env.MAILWHITELIST
-        const whiteListDomains = body.split(',')
-        if (!(whiteListDomains.includes(user.email.split('@')[1])))
+        const data = await ky.get('https://raw.githubusercontent.com/disposable-email-domains/disposable-email-domains/master/disposable_email_blocklist.conf').text()
+        const disposableEmailDomains = data.split('\n')
+        if (disposableEmailDomains.includes(user.email.split('@')[1]))
           return false
       }
-      if (env.DISABLE_SIGNUP && isNewUser && user.email) {
+      */
+      /**  
+	    if (isNewUser && user.email) {
+        const data = env.MAILWHITELIST
+        const whiteListDomains = data.split(',')
+        if (!(whiteListDomains.includes(user.email.split('@')[1])))
+          return false
+      }	  
+      */
+      if (
+        env.DISABLE_SIGNUP &&
+        isNewUser &&
+        user.email &&
+        !env.ADMIN_EMAIL?.includes(user.email)
+      ) {
         const { invitations, workspaceInvitations } =
           await getNewUserInvitations(prisma, user.email)
         if (invitations.length === 0 && workspaceInvitations.length === 0)
