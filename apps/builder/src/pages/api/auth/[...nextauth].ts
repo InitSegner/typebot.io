@@ -171,8 +171,8 @@ export const getAuthOptions = ({
           return false
       }
       */
-      /**  
-	    if (isNewUser && user.email) {
+      /** 
+      if (isNewUser && user.email) {
         const data = env.MAILWHITELIST
         const whiteListDomains = data.split(',')
         if (!(whiteListDomains.includes(user.email.split('@')[1])))
